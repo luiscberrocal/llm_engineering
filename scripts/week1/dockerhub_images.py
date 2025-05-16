@@ -2,6 +2,9 @@ import re
 
 import requests
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 def get_versions_dockerhub(image_name:str, page_size:int=100):
     """
@@ -67,12 +70,14 @@ def get_versions(image_name:str, image_filter:str, page_size:int=100):
     """
     all_tags = get_versions_dockerhub(image_name, page_size)
     filtered_tags = [tag for tag in all_tags if re.match(image_filter, tag)]
+    logger.debug("TAGS: %s", len((filtered_tags)))
     return filtered_tags
 
 if __name__ == '__main__':
     # Example usage:
     name ="python"
     image_filter = r"3\.1\d+\.\d+-([a-zA-Z]+)(-[a-zA-Z0-9]+)?"
+    logger.debug("Testing Docker Hub API")
     print(f"Fetching {name} versions from Docker Hub...")
     image_versions = get_versions(name, image_filter=image_filter) # Fetch 50 tags per page
 
