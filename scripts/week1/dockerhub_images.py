@@ -72,14 +72,14 @@ def get_versions(image_name:str, image_filter:str, page_size:int=100):
 if __name__ == '__main__':
     # Example usage:
     name ="python"
-    image_filter = r"\d+\.\d+\.\d+-([a-zA-Z]+)(-[a-zA-Z0-9]+)?"
-    print("Fetching Python versions from Docker Hub...")
-    python_versions = get_versions_dockerhub(name) # Fetch 50 tags per page
+    image_filter = r"3\.1\d+\.\d+-([a-zA-Z]+)(-[a-zA-Z0-9]+)?"
+    print(f"Fetching {name} versions from Docker Hub...")
+    image_versions = get_versions(name, image_filter=image_filter) # Fetch 50 tags per page
 
-    if python_versions:
-        print(f"Found {len(python_versions)} Python versions:")
+    if image_versions:
+        print(f"Found {len(image_versions)} Python versions:")
         # Print the first 20 versions as an example
-        for version in python_versions:
+        for version in image_versions:
             print(version)
     else:
         print("Could not retrieve Python versions.")
