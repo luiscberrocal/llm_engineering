@@ -1,11 +1,14 @@
 import re
+from functools import lru_cache
 
 import requests
 import json
 import logging
 
+
 logger = logging.getLogger(__name__)
 
+@lru_cache(maxsize=5)
 def get_versions_dockerhub(image_name:str, page_size:int=100):
     """
     Fetches a list of available Python versions (tags) from Docker Hub.
@@ -71,15 +74,15 @@ def get_versions(image_name:str, image_filter:str, page_size:int=100):
     all_tags = get_versions_dockerhub(image_name, page_size)
     filtered_tags = [tag for tag in all_tags if re.match(image_filter, tag)]
     logger.debug("TAGS: %s", len((filtered_tags)))
-    return filtered_tags
+    return sorted(filtered_tags, reverse=True)
 
 if __name__ == '__main__':
     # Example usage:
-    name ="python"
-    image_filter = r"3\.1\d+\.\d+-([a-zA-Z]+)(-[a-zA-Z0-9]+)?"
+    data = { "name":"python",
+    "image_filter": r"3\.1\d+\.\d+-([a-zA-Z]+)(-[a-zA-Z0-9]+)?"}
     logger.debug("Testing Docker Hub API")
-    print(f"Fetching {name} versions from Docker Hub...")
-    image_versions = get_versions(name, image_filter=image_filter) # Fetch 50 tags per page
+    print(f"Fetching {data['name']} versions from Docker Hub...")
+    image_versions = get_versions(data["name"], image_filter=data["image_filter"]) # Fetch 50 tags per page
 
     if image_versions:
         print(f"Found {len(image_versions)} Python versions:")
