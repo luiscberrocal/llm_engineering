@@ -1,5 +1,6 @@
 import re
 from functools import lru_cache
+from pathlib import Path
 
 import requests
 import json
@@ -73,41 +74,80 @@ def get_versions(image_name: str, image_filter: str, page_size: int = 100) -> li
         list: A list of strings, where each string is a Python version tag.
               Returns an empty list if an error occurs or no tags are found.
     """
+    local_tags = get_local_versions(image_name, Path(__file__).parent, max_age=2)
+    if local_tags:
+        logger.debug("Using local tags")
+        return sorted(local_tags, reverse=True)
+
     all_tags = get_versions_dockerhub(image_name, page_size)
     if image_filter:
         filtered_tags = [tag for tag in all_tags if re.match(image_filter, tag)]
     else:
         filtered_tags = all_tags
     logger.debug("TAGS: %s", len((filtered_tags)))
-    return sorted(filtered_tags, reverse=True)
+    tags =  sorted(filtered_tags, reverse=True)
+    set_local_versions(image_name, Path(__file__).parent, tags)
+    return tags
 
-def get_local_versions(image:str, path: Path) -> list[str]:
-    
 
+def get_file_age(path: Path) -> int:
+    """
+    Get the age of a file in days.
+
+    Args:
+        path (Path): The path to the file.
+
+    Returns:
+        int: The age of the file in days.
+    """
+    if path.exists():
+        return (Path().stat().st_mtime - path.stat().st_mtime) // (24 * 3600)
+    else:
+        return 0
+
+def get_local_versions(image: str, path: Path, max_age:int = 2) -> list[str]:
+    """Get the local versions of a docker image."""
+    json_file = path / f"{image}.json"
+    age = get_file_age(json_file)
+    if json_file.exists() and age < max_age:
+        with open(json_file, "r") as f:
+            data = json.load(f)
+        return data
+    else:
+        return []
+
+def set_local_versions(image: str, path: Path, data: list[str]) -> None:
+    """Set the local versions of a docker image."""
+    json_file = path / f"{image}.json"
+    with open(json_file, "w") as f:
+        json.dump(data, f)
+    logger.debug("Saved %s versions to %s", image, json_file)
 
 if __name__ == "__main__":
     # Example usage:
-    image_list = [{
-        "name": "python",
-        "image_filter": r"3\.1\d+\.\d+-([a-zA-Z]+)(-[a-zA-Z0-9]+)?",
-    },
-     {
-        "name": "postgres",
-        "image_filter": r"1[679]\.\d+-([a-zA-Z]+)(-[a-zA-Z0-9]+)?",
-    }]
+    image_list = [
+        {
+            "name": "python",
+            "image_filter": r"3\.1\d+\.\d+-([a-zA-Z]+)(-[a-zA-Z0-9]+)?",
+        },
+        {
+            "name": "postgres",
+            "image_filter": r"1[679]\.\d+-([a-zA-Z]+)(-[a-zA-Z0-9]+)?",
+        },
+    ]
 
     for image in image_list:
         logger.debug("Testing Docker Hub API")
         print(f"Fetching {image['name']} versions from Docker Hub...")
         image_versions = get_versions(
-        image["name"], image_filter=image["image_filter"]
-    )  # Fetch 50 tags per page
+            image["name"], image_filter=image["image_filter"]
+        )  # Fetch 50 tags per page
 
         if image_versions:
             print(f"Found {len(image_versions)} Python versions:")
             # Print the first 20 versions as an example
             for version in image_versions:
                 print(version)
-            print("-"*80)
+            print("-" * 80)
         else:
             print("Could not retrieve Python versions.")
