@@ -6,8 +6,12 @@ import requests
 import json
 import logging
 
+from scripts.week1.settings import IMAGE_LIST
+from scripts.week1.settings import LOGGING_CONFIG
 
-logger = logging.getLogger(__name__)
+# Apply the logging configuration
+logging.config.dictConfig(LOGGING_CONFIG)
+logger = logging.getLogger("__main__")
 
 
 @lru_cache(maxsize=5)
@@ -124,23 +128,7 @@ def set_local_versions(image: str, path: Path, data: list[str]) -> None:
     logger.debug("Saved %s versions to %s", image, json_file)
 
 if __name__ == "__main__":
-    # Example usage:
-    image_list = [
-        {
-            "name": "python",
-            "image_filter": r"3\.1\d+\.\d+-([a-zA-Z]+)(-[a-zA-Z0-9]+)?",
-        },
-        {
-            "name": "postgres",
-            "image_filter": r"1[679]\.\d+-([a-zA-Z]+)(-[a-zA-Z0-9]+)?",
-        },
-        {
-            "name": "node",
-            "image_filter": r"(\d+\.\d+\.\d+)-([A-Za-z-0-9\.]+)",
-        },
-    ]
-
-    for image in image_list:
+    for image in IMAGE_LIST:
         logger.debug("Testing Docker Hub API")
         print(f"Fetching {image['name']} versions from Docker Hub...")
         image_versions = get_versions(
@@ -155,3 +143,6 @@ if __name__ == "__main__":
             print("-" * 80)
         else:
             print("Could not retrieve Python versions.")
+
+    print("Nama", __name__)
+    logger.info("INFO ------------------")
