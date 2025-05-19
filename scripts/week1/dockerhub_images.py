@@ -134,6 +134,10 @@ if __name__ == "__main__":
             "name": "postgres",
             "image_filter": r"1[679]\.\d+-([a-zA-Z]+)(-[a-zA-Z0-9]+)?",
         },
+        {
+            "name": "node",
+            "image_filter": r"(\d+\.\d+\.\d+)-([A-Za-z-0-9\.]+)",
+        },
     ]
 
     for image in image_list:
