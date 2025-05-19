@@ -51,7 +51,8 @@ API_KEY = os.getenv('OPENAI_API_KEY')
 
 OLLAMA_API = "http://localhost:11434/api/chat"
 HEADERS = {"Content-Type": "application/json"}
-MODEL = "llama3.2"
+# MODEL = "llama3.2"
+MODEL = "deepseek-r1:7b"
 
 logging.config.dictConfig(LOGGING_CONFIG)
 if __name__ == "__main__":

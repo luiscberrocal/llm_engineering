@@ -64,14 +64,14 @@ def classify_using_ollama():
     payload = {"model": MODEL, "messages": messages, "stream": False}
     response = requests.post(OLLAMA_API, json=payload, headers=HEADERS)
     print(response.json()['message']['content'])
-    user_prompt_file = Path(__file__).parent / f"ollama_user_prompt_{image}_{distro.lower()}.txt"
+    user_prompt_file = Path(__file__).parent / f"{MODEL}_user_prompt_{image}_{distro.lower()}.txt"
     with open(user_prompt_file, "w") as f:
         f.write(user_prompt)
 
 
 if __name__ == "__main__":
     start = time.time()
-    main()
-    # classify_using_ollama()
+    # main()
+    classify_using_ollama()
     end = time.time()
     print(f"Execution time: {end - start:.2f} seconds")
