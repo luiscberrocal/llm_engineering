@@ -49,6 +49,10 @@ IMAGE_LIST = [
 load_dotenv(override=True)
 API_KEY = os.getenv('OPENAI_API_KEY')
 
+OLLAMA_API = "http://localhost:11434/api/chat"
+HEADERS = {"Content-Type": "application/json"}
+MODEL = "llama3.2"
+
 logging.config.dictConfig(LOGGING_CONFIG)
 if __name__ == "__main__":
     logger = logging.getLogger(__name__)
