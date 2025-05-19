@@ -10,7 +10,8 @@ def build_user_prompt(versions: list[str], image: str, distro: str) -> str:
     user_prompt = f"""You are looking for the best Docker hub image for {image} to use for a project. 
     You want to use the latest version of the image, but you want to stay one minor version behind the latest.
     Select the images that are the best to use for {image} and {distro}. The images to select from are: {images}
-    Please provide a list Python list of strings with the best images to use only include the latest version behind."""
+    Please provide a list Python list of strings with the best images to use only include the latest version behind.
+    The image list might not be ordered by version so please scan the whole list and select the best one."""
     return user_prompt
 
 
@@ -20,10 +21,11 @@ def main():
     but always the version behind to be in it's latest minor and patch version. For example, if the latest version is 3.13.3
     we want to the latest for version 3.12.x. You know that `alpine` is Linux distro but it is not based on Debian. 
     """
-    image_data = IMAGE_LIST[0]
+    image_data = IMAGE_LIST[2]
     versions = get_versions(image_data["name"], image_filter=image_data["image_filter"])
     image = image_data["name"]
     distro = "Debian"
+    print(f"Fetching '{image.upper()}' versions from Docker Hub...")
     messages = [
         {"role": "system", "content": system_prompt},
         {"role": "user", "content": build_user_prompt(versions, image, distro)},
