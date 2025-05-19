@@ -28,9 +28,6 @@ LOGGING_CONFIG = {
     },
 }
 
-logger = logging.getLogger(__name__)
-
-# Example usage:
 IMAGE_LIST = [
     {
         "name": "python",
@@ -45,3 +42,9 @@ IMAGE_LIST = [
         "image_filter": r"(\d+\.\d+\.\d+)-([A-Za-z-0-9\.]+)",
     },
 ]
+
+
+logging.config.dictConfig(LOGGING_CONFIG)
+if __name__ == "__main__":
+    logger = logging.getLogger(__name__)
+    logger.debug("Logging configuration is set up.")
