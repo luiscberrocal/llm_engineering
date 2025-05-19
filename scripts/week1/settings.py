@@ -1,4 +1,7 @@
 import logging
+import os
+
+from dotenv import load_dotenv
 
 LOGGING_CONFIG = {
     "version": 1,
@@ -43,6 +46,8 @@ IMAGE_LIST = [
     },
 ]
 
+load_dotenv(override=True)
+API_KEY = os.getenv('OPENAI_API_KEY')
 
 logging.config.dictConfig(LOGGING_CONFIG)
 if __name__ == "__main__":
