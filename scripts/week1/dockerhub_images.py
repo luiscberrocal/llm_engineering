@@ -59,7 +59,7 @@ def get_versions_dockerhub(image_name: str, page_size: int = 100):
     return all_tags
 
 
-def get_versions(image_name: str, image_filter: str, page_size: int = 100):
+def get_versions(image_name: str, image_filter: str, page_size: int = 100) -> list[str]:
     """
     Fetches a list of available Python versions (tags) from Docker Hub.
 
@@ -81,27 +81,33 @@ def get_versions(image_name: str, image_filter: str, page_size: int = 100):
     logger.debug("TAGS: %s", len((filtered_tags)))
     return sorted(filtered_tags, reverse=True)
 
+def get_local_versions(image:str, path: Path) -> list[str]:
+    
+
 
 if __name__ == "__main__":
     # Example usage:
-    data = {
+    image_list = [{
         "name": "python",
         "image_filter": r"3\.1\d+\.\d+-([a-zA-Z]+)(-[a-zA-Z0-9]+)?",
-    }
-    data = {
+    },
+     {
         "name": "postgres",
         "image_filter": r"1[679]\.\d+-([a-zA-Z]+)(-[a-zA-Z0-9]+)?",
-    }
-    logger.debug("Testing Docker Hub API")
-    print(f"Fetching {data['name']} versions from Docker Hub...")
-    image_versions = get_versions(
-        data["name"], image_filter=data["image_filter"]
+    }]
+
+    for image in image_list:
+        logger.debug("Testing Docker Hub API")
+        print(f"Fetching {image['name']} versions from Docker Hub...")
+        image_versions = get_versions(
+        image["name"], image_filter=image["image_filter"]
     )  # Fetch 50 tags per page
 
-    if image_versions:
-        print(f"Found {len(image_versions)} Python versions:")
-        # Print the first 20 versions as an example
-        for version in image_versions:
-            print(version)
-    else:
-        print("Could not retrieve Python versions.")
+        if image_versions:
+            print(f"Found {len(image_versions)} Python versions:")
+            # Print the first 20 versions as an example
+            for version in image_versions:
+                print(version)
+            print("-"*80)
+        else:
+            print("Could not retrieve Python versions.")
